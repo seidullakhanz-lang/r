@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Интерактивті жаратылыстану сабағы</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ padding:20px;
+ font-family:"Trebuchet MS",Arial,sans-serif;
+ background:linear-gradient(135deg,#e0f7f1,#fce4ec,#fff3d6);
+ color:#40534c;
+}
+
+.container{max-width:1100px;margin:auto}
+
+header{
+ text-align:center;
+ padding:25px;
+ background:#fff;
+ border-radius:25px;
+ box-shadow:0 5px 20px #0001;
+ margin-bottom:22px;
+}
+
+header h1{color:#329778;font-size:30px}
+header p{color:#82948c}
+
+.section{
+ background:white;
+ border-radius:25px;
+ padding:25px;
+ margin:22px 0;
+ box-shadow:0 5px 18px #0001;
+}
+
+h2{
+ color:#328e73;
+ text-align:center;
+}
+
+button{
+ border:0;
+ border-radius:13px;
+ padding:12px 20px;
+ background:#55b895;
+ color:white;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+ transition:.25s;
+}
+
+button:hover{
+ transform:translateY(-2px);
+ background:#318e70;
+}
+
+.center{text-align:center}
+
+.result{
+ margin:15px auto;
+ padding:15px;
+ border-radius:15px;
+ background:#eaf8ef;
+ line-height:1.7;
+ max-width:750px;
+ text-align:center;
+}
+
+.hidden{display:none!important}
+
+/* 11 КҮЛТЕЛІ ГҮЛ */
+
+.flower-stage{
+ position:relative;
+ width:460px;
+ height:470px;
+ margin:25px auto 10px;
+}
+
+.flower-stem{
+ position:absolute;
+ width:17px;
+ height:190px;
+ background:linear-gradient(90deg,#4caa6c,#9bd88d);
+ left:221px;
+ top:245px;
+ border-radius:20px;
+ z-index:0;
+}
+
+.leaf{
+ position:absolute;
+ width:90px;
+ height:42px;
+ background:#76c98a;
+ border-radius:100% 0 100% 0;
+ top:340px;
+ left:150px;
+ transform:rotate(15deg);
+}
+
+.leaf.second{
+ left:225px;
+ transform:rotate(80deg) scaleX(-1);
+}
+
+.flower{
+ position:absolute;
+ width:460px;
+ height:460px;
+ top:0;
+ left:0;
+}
+
+.petal{
+ position:absolute;
+ width:105px;
+ height:105px;
+ left:177.5px;
+ top:177.5px;
+ border-radius:55% 55% 48% 48%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:10px;
+ font-size:13px;
+ font-weight:bold;
+ color:#563f50;
+ border:3px solid white;
+ box-shadow:0 4px 12px #0002;
+ cursor:pointer;
+ transform:
+ rotate(var(--angle))
+ translateY(-133px)
+ rotate(calc(-1 * var(--angle)));
+ transition:transform .45s,filter .3s;
+ position:absolute;
+ z-index:2;
+ line-height:1.25;
+}
+
+.petal:hover{
+ filter:brightness(1.08);
+ transform:
+ rotate(var(--angle))
+ translateY(-145px)
+ rotate(calc(-1 * var(--angle)));
+ z-index:5;
+}
+
+.petal.opened{
+ transform:
+ rotate(var(--angle))
+ translateY(-150px)
+ rotate(calc(-1 * var(--angle)));
+ filter:brightness(1.12);
+}
+
+.flower-center{
+ position:absolute;
+ width:105px;
+ height:105px;
+ left:177.5px;
+ top:177.5px;
+ background:radial-gradient(circle,#ffe77c,#ffbd3f);
+ border:5px solid white;
+ border-radius:50%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:43px;
+ box-shadow:0 5px 15px #0002;
+ z-index:6;
+}
+
+.wish-box{
+ min-height:65px;
+ max-width:700px;
+ margin:15px auto;
+ padding:15px;
+ background:#fff3cf;
+ border:2px dashed #f1c36b;
+ border-radius:16px;
+ text-align:center;
+ font-size:18px;
+ font-weight:bold;
+ color:#765a40;
+}
+
+/* ЖҰМБАҚ */
+
+.riddle{
+ background:#fff7df;
+ border-radius:18px;
+ padding:22px;
+ font-size:19px;
+ line-height:1.9;
+ text-align:center;
+}
+
+input,select{
+ padding:11px;
+ border:2px solid #cde2d7;
+ border-radius:10px;
+ font-size:15px;
+ max-width:100%;
+}
+
+input[type=text]{width:250px}
+
+/* ТОПҚА БӨЛУ */
+
+.groups{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
+ margin-top:20px;
+}
+
+.group{
+ padding:18px 8px;
+ border-radius:17px;
+ text-align:center;
+ font-weight:bold;
+ font-size:18px;
+}
+
+.g1{background:#e1f1ff}
+.g2{background:#dff5e8}
+.g3{background:#ffeadf}
+.g4{background:#f0e4ff}
+
+/* ҮЙ ТАПСЫРМАСЫ */
+
+.task-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:18px;
+ margin-top:22px;
+}
+
+.task-card{
+ padding:20px;
+ border-radius:20px;
+ border:2px solid #e3eee8;
+ background:#fbfefc;
+}
+
+.task-card h3{margin-top:0;color:#398d71}
+
+.task-card p{line-height:1.6}
+
+.task-card button{margin-top:10px}
+
+.choice{
+ display:block;
+ width:100%;
+ margin:8px 0;
+ text-align:left;
+ background:#f0f7f3;
+ color:#40534c;
+ border:1px solid #d7e9de;
+}
+
+.choice:hover{background:#d8f0e2;color:#34594c}
+
+.choice.selected{
+ background:#c6eed5;
+ border:2px solid #52ad7d;
+}
+
+.sequence{
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+ margin:15px 0;
+}
+
+.sequence button{
+ flex:1 1 100%;
+ background:#f0f7f3;
+ color:#40534c;
+ border:1px solid #d4e7da;
+}
+
+.sequence button.selected{background:#bdebd0}
+
+.feedback{
+ margin-top:12px;
+ padding:12px;
+ background:#eef9f1;
+ border-radius:12px;
+ font-weight:bold;
+ min-height:35px;
+}
+
+.points{
+ text-align:center;
+ padding:12px;
+ background:#fff1cc;
+ border-radius:15px;
+ font-size:18px;
+ margin-top:20px;
+}
+
+@media(max-width:700px){
+ .flower-stage{
+  transform:scale(.78);
+  transform-origin:top center;
+  margin-bottom:-90px;
+ }
+ .task-grid{grid-template-columns:1fr}
+ .groups{grid-template-columns:repeat(2,1fr)}
+ .section{padding:15px}
+ header h1{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+ <div style="font-size:42px">🌸 🌿 🌻</div>
+ <h1>Қош келдіңдер, жас зерттеушілер!</h1>
+ <p>Жаратылыстану сабағына қош келдіңдер!</p>
+</header>
+
+<!-- 1. 11 КҮЛТЕЛІ ГҮЛ -->
+
+<section class="section center">
+
+<h2>🌷 «Ізгі тілек гүлдері»</h2>
+
+<p>
+Балалар, әрқайсың өз есімдерің жазылған гүл күлтесін басыңдар.
+Ішінде сендерге арналған ерекше тілек жасырылған!
+</p>
+
+<div class="flower-stage">
+
+ <div class="flower-stem"></div>
+ <div class="leaf"></div>
+ <div class="leaf second"></div>
+
+ <div class="flower" id="flower"></div>
+
+ <div class="flower-center">🌼</div>
+
+</div>
+
+<div class="wish-box" id="wishBox">
+🌸 Өз есімің жазылған күлтешені таңда!
+</div>
+
+</section>
+
+<!-- 2. ЖҰМБАҚ -->
+
+<section class="section center">
+
+<h2>🔍 «Жасырын тақырып»</h2>
+
+<div class="riddle">
+Жерге түсіп домалайды,<br>
+Кейде ұшып самғайды.<br>
+Жаңа өмірге жол ашып,<br>
+Өсімдік болып жайнайды.<br><br>
+<b>Бұл не?</b>
+</div>
+
+<br>
+
+<input type="text" id="answer" placeholder="Жауабыңды жаз...">
+
+<button onclick="checkRiddle()">Тексеру</button>
+
+<div class="feedback" id="riddleFeedback"></div>
+
+</section>
+
+<!-- 3. ТОПҚА БӨЛУ -->
+
+<section class="section center">
+
+<h2>🍃 «Тұқымның саяхаты»</h2>
+
+<p>Интерактивті батырманы басып, өз тобыңды анықта!</p>
+
+<button onclick="assignGroup()">🎲 Топты анықтау</button>
+
+<div class="result" id="groupResult">
+Тобыңды анықтау үшін батырманы бас!
+</div>
+
+<div class="groups">
+ <div class="group g1">🌬️<br>1-топ<br>ЖЕЛ</div>
+ <div class="group g2">💧<br>2-топ<br>СУ</div>
+ <div class="group g3">🐾<br>3-топ<br>ЖАНУАР</div>
+ <div class="group g4">🌱<br>4-топ<br>ӨЗДІГІНЕН</div>
+</div>
+
+</section>
+
+<!-- 4. ҮЙ ТАПСЫРМАСЫН ҚАЙТАЛАУ -->
+
+<section class="section">
+
+<h2>🌱 Өткенді қайталайық!</h2>
+
+<h3 class="center">«Өсімдіктің тіршілік циклі»</h3>
+
+<p class="center">
+Балалар, өткен сабақта өсімдіктің тіршілік циклімен таныстық.
+Бүгін төрт топқа арналған төрт түрлі тапсырманы орындаймыз!
+</p>
+
+<div class="task-grid">
+
+<!-- 1 ТОП -->
+
+<div class="task-card">
+<h3>🌼 1-топ. «Ретін тап»</h3>
+<p><b>Тапсырма:</b> Өсімдіктің тіршілік кезеңдерін дұрыс ретімен таңда. Батырмаларды ретімен бас!</p>
+
+<div class="sequence" id="seq1">
+<button onclick="pickSequence(this,1)">🌼 Гүлдеу</button>
+<button onclick="pickSequence(this,2)">🌰 Тұқым</button>
+<button onclick="pickSequence(this,3)">🍎 Жемістің түзілуі</button>
+<button onclick="pickSequence(this,4)">🌱 Өскіннің пайда болуы</button>
+<button onclick="pickSequence(this,5)">🌿 Ересек өсімдік</button>
+</div>
+
+<button onclick="checkSequence()">Жауапты тексеру</button>
+<button onclick="resetSequence()" style="background:#9b9b9b">Қайта бастау</button>
+
+<div class="feedback" id="seqFeedback"></div>
+</div>
+
+<!-- 2 ТОП -->
+
+<div class="task-card">
+<h3>💧 2-топ. «Сәйкестендір»</h3>
+
+<p><b>Тапсырма:</b> Өсімдіктің өсуіне қажетті жағдайларды дұрыс сәйкестендір.</p>
+
+<p>1. Су</p>
+<select id="match1">
+<option value="">Таңда</option>
+<option value="a">Ылғал береді</option>
+<option value="b">Жарық береді</option>
+<option value="c">Жылытады</option>
+</select>
+
+<p>2. Күн сәулесі</p>
+<select id="match2">
+<option value="">Таңда</option>
+<option value="a">Ылғал береді</option>
+<option value="b">Жарық береді</option>
+<option value="c">Жылытады</option>
+</select>
+
+<p>3. Жылу</p>
+<select id="match3">
+<option value="">Таңда</option>
+<option value="a">Ылғал береді</option>
+<option value="b">Жарық береді</option>
+<option value="c">Жылытады</option>
+</select>
+
+<button onclick="checkMatch()">Тексеру</button>
+
+<div class="feedback" id="matchFeedback"></div>
+</div>
+
+<!-- 3 ТОП -->
+
+<div class="task-card">
+<h3>🐾 3-топ. «Бос орынды толтыр»</h3>
+
+<p><b>Тапсырма:</b> Сөйлемдердегі бос орындарға қажетті сөздерді жаз.</p>
+
+<p>1. Өсімдік тіршілігі
+<input type="text" id="fill1" placeholder="..."> басталады.</p>
+
+<p>2. Тұқымның өнуі үшін су, ауа және
+<input type="text" id="fill2" placeholder="..."> қажет.</p>
+
+<p>3. Тұқымнан алдымен
+<input type="text" id="fill3" placeholder="..."> пайда болады.</p>
+
+<button onclick="checkFill()">Тексеру</button>
+
+<div class="feedback" id="fillFeedback"></div>
+</div>
+
+<!-- 4 ТОП -->
+
+<div class="task-card">
+<h3>🌱 4-топ. «Дұрыс па, бұрыс па?»</h3>
+
+<p><b>Тапсырма:</b> Берілген пікірлердің дұрыс немесе бұрыс екенін анықта.</p>
+
+<div id="trueFalse">
+<p>1. Өсімдік тұқымнан өсіп шығады.</p>
+<button class="choice" onclick="answerTF(0,true,this)">Дұрыс</button>
+<button class="choice" onclick="answerTF(0,false,this)">Бұрыс</button>
+
+<p>2. Тұқымның өнуіне су қажет емес.</p>
+<button class="choice" onclick="answerTF(1,true,this)">Дұрыс</button>
+<button class="choice" onclick="answerTF(1,false,this)">Бұрыс</button>
+
+<p>3. Өсімдік өскен соң гүлдеуі мүмкін.</p>
+<button class="choice" onclick="answerTF(2,true,this)">Дұрыс</button>
+<button class="choice" onclick="answerTF(2,false,this)">Бұрыс</button>
+
+<p>4. Өсімдіктің тіршілік циклі жеміс пен тұқымның түзілуін қамтиды.</p>
+<button class="choice" onclick="answerTF(3,true,this)">Дұрыс</button>
+<button class="choice" onclick="answerTF(3,false,this)">Бұрыс</button>
+</div>
+
+<button onclick="checkTF()">Нәтижені тексеру</button>
+
+<div class="feedback" id="tfFeedback"></div>
+</div>
+
+</div>
+
+<div class="points" id="totalPoints">
+🏆 Төрт топтың тапсырмаларына сәттілік!
+</div>
+
+</section>
+
+</div>
+
+<script>
+
+/* 11 ТҮРЛІ КҮЛТЕ */
+
+const students=[
+ {name:"Ақниет",wish:"Ақниет, бүгінгі сабағың сәтті өтсін! Әрдайым ізденімпаз бол! 🌟",color:"#ff9eb5"},
+ {name:"Ақнұр",wish:"Ақнұр, білімің күн сайын нұрлана берсін! ☀️",color:"#ffc477"},
+ {name:"Айнұр",wish:"Айнұр, барлық тапсырманы сенімді орында! 🌷",color:"#ffe68b"},
+ {name:"Азида",wish:"Азида, жаңа білім мен жаңалықтарға толы күн болсын! 💜",color:"#c9a5f5"},
+ {name:"Нұрай",wish:"Нұрай, әрқашан белсенді болып, биіктерден көрін! 🌈",color:"#a6d9ff"},
+ {name:"Құралай",wish:"Құралай, армандарың орындалып, сабағың жемісті болсын! 🌺",color:"#ffb5d0"},
+ {name:"Жанель",wish:"Жанель, зеректігіңмен бәрімізді қуант! 💚",color:"#9be2bc"},
+ {name:"Әлтаир",wish:"Әлтаир, зерттеуден жалықпа, әрдайым алға ұмтыл! 🚀",color:"#b5c8ff"},
+ {name:"Гүльмира",wish:"Гүльмира, күнің шаттыққа толып, білімің арта берсін! 🌻",color:"#f6b7e2"},
+ {name:"Ботакөз",wish:"Ботакөз, бүгінгі сабақта ерекше жетістікке жет! 🌼",color:"#b4e3d0"},
+ {name:"Зарина",wish:"Зарина, әрбір күнің қызықты жаңалықтарға толы болсын! 🦋",color:"#d7b7ff"}
+];
+
+const flower=document.getElementById("flower");
+
+students.forEach((student,i)=>{
+ const angle=i*360/11;
+ const petal=document.createElement("button");
+
+ petal.className="petal";
+ petal.style.setProperty("--angle",angle+"deg");
+ petal.style.background=student.color;
+ petal.innerHTML=student.name;
+
+ petal.onclick=()=>{
+  document.querySelectorAll(".petal").forEach(p=>p.classList.remove("opened"));
+  petal.classList.add("opened");
+
+  document.getElementById("wishBox").innerHTML=
+  "🌸 "+student.wish;
+ };
+
+ flower.appendChild(petal);
+});
+
+/* ЖҰМБАҚ */
+
+function checkRiddle(){
+ const a=document.getElementById("answer").value.toLowerCase().trim();
+ const r=document.getElementById("riddleFeedback");
+
+ if(a.includes("тұқым")){
+  r.innerHTML="🎉 Жарайсың! Дұрыс жауап – ТҰҚЫМ! Бүгінгі тақырыбымыз: «Өсімдік тұқымдары қалай таралады?»";
+ }else{
+  r.innerHTML="😊 Тағы ойланып көр! Ол өсімдіктің жаңа өмірін бастайды.";
+ }
+}
+
+/* ТОПҚА БӨЛУ */
+
+let groupIndex=0;
+const groupNames=[
+ "🌬️ СЕН «ЖЕЛ» ТОБЫНДАСЫҢ!",
+ "💧 СЕН «СУ» ТОБЫНДАСЫҢ!",
+ "🐾 СЕН «ЖАНУАР» ТОБЫНДАСЫҢ!",
+ "🌱 СЕН «ӨЗДІГІНЕН» ТОБЫНДАСЫҢ!"
+];
+
+function assignGroup(){
+ document.getElementById("groupResult").innerHTML=
+ "<h2>"+groupNames[groupIndex%4]+"</h2>Зерттеуге сәттілік!";
+ groupIndex++;
+}
+
+/* 1-ТОП: РЕТІН ТАП */
+
+let sequence=[];
+
+function pickSequence(btn,n){
+ if(btn.classList.contains("selected"))return;
+ btn.classList.add("selected");
+ sequence.push(n);
+}
+
+function checkSequence(){
+ const correct=[2,4,1,5,3];
+ const result=document.getElementById("seqFeedback");
+
+ if(sequence.length!==5){
+  result.innerHTML="Барлық кезеңді ретімен таңда!";
+  return;
+ }
+
+ if(sequence.every((v,i)=>v===correct[i])){
+  result.innerHTML="🏆 Керемет! Барлық кезең дұрыс реттелді!";
+ }else{
+  result.innerHTML="💡 Қайта ойланып көр! Алдымен тұқымнан өскін пайда болады.";
+ }
+}
+
+function resetSequence(){
+ sequence=[];
+ document.querySelectorAll("#seq1 button").forEach(b=>b.classList.remove("selected"));
+ document.getElementById("seqFeedback").innerHTML="";
+}
+
+/* 2-ТОП: СӘЙКЕСТЕНДІРУ */
+
+function checkMatch(){
+ let score=0;
+
+ if(document.getElementById("match1").value==="a")score++;
+ if(document.getElementById("match2").value==="b")score++;
+ if(document.getElementById("match3").value==="c")score++;
+
+ document.getElementById("matchFeedback").innerHTML=
+ score===3?"🌟 Тамаша! Барлық жауап дұрыс!":
+ "Сенің нәтижең: "+score+"/3. Қалған жауаптарды қайта тексер!";
+}
+
+/* 3-ТОП: БОС ОРЫН */
+
+function checkFill(){
+ let a=document.getElementById("fill1").value.toLowerCase().trim();
+ let b=document.getElementById("fill2").value.toLowerCase().trim();
+ let c=document.getElementById("fill3").value.toLowerCase().trim();
+
+ let score=0;
+
+ if(a==="тұқымнан"||a==="тұқымнан.")score++;
+ if(b==="жылу"||b==="жылу.")score++;
+ if(c==="өскін"||c==="өскін.")score++;
+
+ document.getElementById("fillFeedback").innerHTML=
+ score===3?"🎉 Жарайсың! Үш сөйлем де дұрыс!":
+ "Нәтиже: "+score+"/3. Сөздерді қайта тексеріп көр!";
+}
+
+/* 4-ТОП: ДҰРЫС-БҰРЫС */
+
+let tfAnswers={};
+
+function answerTF(index,value,btn){
+ tfAnswers[index]=value;
+
+ let parent=btn.parentElement;
+ parent.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+ btn.classList.add("selected");
+}
+
+function checkTF(){
+ const correct=[true,false,true,true];
+ let score=0;
+
+ correct.forEach((v,i)=>{
+ if(tfAnswers[i]===v)score++;
+ });
+
+ document.getElementById("tfFeedback").innerHTML=
+ score===4?"🏆 Өте жақсы! Барлық пікірді дұрыс анықтадың!":
+ "Сенің нәтижең: "+score+"/4. Пікірлерді тағы бір рет оқып көр!";
+}
+
+</script>
+</body>
+</html>
